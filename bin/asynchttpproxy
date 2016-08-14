@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+import argparse
+import asyncio
+import logging
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+
+from asynchttpproxy.server import RequestHandler
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-l', '--log-level', dest='log_level', type=str,
+                        default=os.getenv('PROXY_LOG_LEVEL', 'WARNING'), metavar='LEVEL',
+                        help='Log level')
+    parser.add_argument('-p', '--port', dest='listen_port', type=int,
+                        default=os.getenv('PROXY_PORT', 8000), metavar='PORT',
+                        help='Port to listen')
+    return parser.parse_args()
+
+
+def main(args):
+    log_level = getattr(logging, args.log_level.upper())
+    if not isinstance(log_level, int):
+        raise Exception('Invalid log level: {}'.format(args.log_level))
+    logging.basicConfig(level=log_level)
+
+    port = args.listen_port
+
+    loop = asyncio.get_event_loop()
+    server_future = loop.create_server(lambda: RequestHandler(), '', port)
+    server = loop.run_until_complete(server_future)
+    print('Accepting HTTP proxy requests on {}:{}'.format(
+        *server.sockets[0].getsockname()))
+
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        print()
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    main(args)

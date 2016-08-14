@@ -2,8 +2,10 @@ version: '2'
 services:
   proxy:
     build: .
-    command: /app/bin/asynchttpproxy start
-    env_file: .env
+    command: /app/bin/asynchttpproxy
+    environment:
+      PROXY_LOG_LEVEL: debug
+      PROXY_PORT: 8000
     ports:
       - "8000:8000"
     restart: unless-stopped
