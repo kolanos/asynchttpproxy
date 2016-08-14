@@ -48,7 +48,7 @@ class RequestHandler(aiohttp.server.ServerHttpProtocol):
         # Passthrough all headers, including range parameters, except
         # Content-Encoding since aiohttp determines that automatically.
         proxy_headers = [
-            (k, v) for k, v in response.headers.items(getall=True)
+            (k, v) for k, v in response.headers.items()
             if k != 'content-encoding']
         proxy_response.add_headers(*proxy_headers)
         proxy_response.send_headers()
@@ -58,8 +58,8 @@ class RequestHandler(aiohttp.server.ServerHttpProtocol):
             if not chunk:
                 break
             proxy_response.write(chunk)
+            bytes_transferred += len(chunk)
         yield from proxy_response.write_eof()
-        bytes_transferred += int(response.headers['Content-Length'])
 
     @asyncio.coroutine
     def send_response(self, status, http_version, headers=None, body=b''):
