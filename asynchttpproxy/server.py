@@ -23,8 +23,8 @@ class RequestHandler(aiohttp.server.ServerHttpProtocol):
         query = dict(urllib.parse.parse_qsl(parsed_url[4]))
         logging.info('{} {}'.format(message.method, url))
 
-        if message.method == 'GET' and url == '/status':
-            yield from self.send_status_response(200, message.version)
+        if message.method == 'GET' and url == '/stats':
+            yield from self.send_stats_response(200, message.version)
             return
 
         if parsed_url.scheme.lower() != 'http':
@@ -75,8 +75,8 @@ class RequestHandler(aiohttp.server.ServerHttpProtocol):
         yield from response.write_eof()
 
     @asyncio.coroutine
-    def send_status_response(self, status, http_version):
-        """Sends bytes transfered and uptime status."""
+    def send_stats_response(self, status, http_version):
+        """Sends bytes transfered and uptime stats."""
         body = json.dumps({
             'bytes_transferred': human_bytes(bytes_transferred),
             'uptime': uptime(uptime_start, time.time())
