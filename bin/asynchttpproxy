@@ -18,7 +18,7 @@ def parse_args():
                         default=os.getenv('PROXY_LOG_LEVEL', 'WARNING'), metavar='LEVEL',
                         help='Log level')
     parser.add_argument('-p', '--port', dest='listen_port', type=int,
-                        default=os.getenv('PROXY_PORT', 8000), metavar='PORT',
+                        default=os.getenv('PROXY_PORT', 8080), metavar='PORT',
                         help='Port to listen')
     return parser.parse_args()
 
